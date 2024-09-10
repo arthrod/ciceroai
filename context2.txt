@@ -1,0 +1,577 @@
+Directory Structure:
+
+cicero-ai
+  ├─ README.md
+  ├─ acompiled.txt
+  ├─ compiled2.py
+  ├─ compileproject.py
+  ├─ context2.txt
+  ├─ next-env.d.ts
+  ├─ next.config.mjs
+  ├─ package-lock.json
+  ├─ package.json
+  ├─ postcss.config.mjs
+  ├─ src
+    ├─ app
+      ├─ chat
+        ├─ actions.ts
+        ├─ chat
+          ├─ page.tsx
+        ├─ page.tsx
+      ├─ favicon.ico
+      ├─ fonts
+        ├─ GeistMonoVF.woff
+        ├─ GeistVF.woff
+      ├─ globals.css
+      ├─ layout.tsx
+      ├─ page.tsx
+    ├─ locales
+      ├─ en.json
+      ├─ pt.json
+    ├─ styles
+      ├─ Chat.module.css
+      ├─ Welcome.module.css
+      ├─ globals.css
+    ├─ utils
+      ├─ translations.ts
+  ├─ tailwind.config.ts
+  ├─ tsconfig.json
+  ├─ vercel.json
+
+==================================================
+
+
+--- File: package.json ---
+
+{
+  "name": "cicero-ai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
+  },
+  "dependencies": {
+    "@ai-sdk/openai": "^0.0.31",
+    "@chainlit/react-client": "^0.1.2",
+    "@literalai/client": "^0.0.509",
+    "ai": "^3.2.1",
+    "jwt-decode": "^4.0.0",
+    "lodash": "^4.17.21",
+    "next": "14.2.9",
+    "react": "^18",
+    "react-dom": "^18",
+    "recoil": "^0.7.7",
+    "socket.io-client": "^4.7.5",
+    "swr": "^2.2.5",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@typescript-eslint/eslint-plugin": "^5.0.0",
+    "@typescript-eslint/parser": "^5.0.0",
+    "autoprefixer": "^10.0.1",
+    "eslint": "^8.0.0",
+    "eslint-config-next": "14.2.9",
+    "eslint-plugin-react": "^7.0.0",
+    "eslint-plugin-react-hooks": "^4.0.0",
+    "postcss": "^8",
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5.4.3"
+  }
+}
+
+
+--- File: tsconfig.json ---
+
+{
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
+
+
+--- File: next.config.mjs ---
+
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  i18n: {
+    locales: ['en', 'pt'],
+    defaultLocale: 'en',
+  },
+};
+
+export default nextConfig;
+
+
+--- File: .eslintrc.js ---
+
+module.exports = {
+  parser: "@typescript-eslint/parser",
+  extends: [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended",
+    "next/core-web-vitals",
+  ],
+  plugins: ["@typescript-eslint", "react"],
+  rules: {
+    // Add any custom rules here
+  },
+  settings: {
+    react: {
+      version: "detect",
+    },
+  },
+};
+
+
+--- File: src/locales/en.json ---
+
+{
+  "welcome": "Welcome to Cicero AI",
+  "getStarted": "Get Started",
+  "typeMessage": "Type your message here...",
+  "send": "Send",
+  "chatTitle": "Chat with Cicero AI"
+}
+
+
+--- File: src/locales/pt.json ---
+
+{
+  "welcome": "Bem-vindo ao Cicero AI",
+  "getStarted": "Começar",
+  "typeMessage": "Digite sua mensagem aqui...",
+  "send": "Enviar",
+  "chatTitle": "Converse com o Cicero AI"
+}
+
+
+--- File: src/utils/translations.ts ---
+
+import en from "@/locales/en.json";
+import pt from "@/locales/pt.json";
+
+const translations = { en, pt };
+
+export interface Translations {
+  welcome: string;
+  getStarted: string;
+  typeMessage: string;
+  send: string;
+  chatTitle: string;
+  [key: string]: string; // For any other translations you might add later
+}
+
+export function getTranslations(lang: string): Translations {
+  return (translations[lang as keyof typeof translations] ||
+    translations.en) as Translations;
+}
+
+export function detectLanguage(): string {
+  if (typeof window !== "undefined") {
+    const browserLang = navigator.language.split("-")[0];
+    return ["pt", "en"].includes(browserLang) ? browserLang : "en";
+  }
+  return "en";
+}
+
+
+--- File: src/styles/globals.css ---
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-geist-sans), Arial, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+
+--- File: src/app/page.tsx ---
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { detectLanguage, getTranslations } from "@/utils/translations";
+import { Translations } from "@/utils/translations";
+
+export default function Home() {
+  const [lang, setLang] = useState("en");
+  const [translations, setTranslations] = useState<Translations>(
+    {} as Translations,
+  );
+  const router = useRouter();
+
+  useEffect(() => {
+    const detectedLang = detectLanguage();
+    setLang(detectedLang);
+    setTranslations(getTranslations(detectedLang));
+  }, []);
+
+  const handleGetStarted = () => {
+    router.push(`/chat?lang=${lang}`);
+  };
+
+  if (!translations.welcome) return null;
+
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <h1 className="text-4xl font-bold mb-8">{translations.welcome}</h1>
+      <button
+        onClick={handleGetStarted}
+        className="px-6 py-3 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+      >
+        {translations.getStarted}
+      </button>
+    </div>
+  );
+}
+
+
+--- File: src/app/layout.tsx ---
+
+import type { Metadata } from "next";
+import "@/styles/globals.css";
+
+export const metadata: Metadata = {
+  title: "Cicero AI",
+  description: "AI-powered chatbot with multilingual support",
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body>{children}</body>
+    </html>
+  );
+}
+
+
+--- File: src/app/chat/page.tsx ---
+
+"use client";
+
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Message, continueConversation } from "./actions";
+import { Translations } from "@/utils/translations";
+import { readStreamableValue } from "ai/rsc";
+import { getTranslations } from "@/utils/translations";
+import { RecoilRoot } from "recoil";
+import {
+  ChainlitAPI,
+  ChainlitContext,
+  useChatSession,
+} from "@chainlit/react-client";
+
+const CHAINLIT_SERVER_URL =
+  process.env.NEXT_PUBLIC_CHAINLIT_SERVER_URL || "http://localhost:8000";
+const apiClient = new ChainlitAPI(CHAINLIT_SERVER_URL, "webapp");
+
+export default function Chat() {
+  const [conversation, setConversation] = useState<Message[]>([]);
+  const [input, setInput] = useState<string>("");
+  const [translations, setTranslations] = useState<Translations>(
+    {} as Translations,
+  );
+  const searchParams = useSearchParams();
+  const lang = searchParams.get("lang") || "en";
+
+  useEffect(() => {
+    setTranslations(getTranslations(lang));
+  }, [lang]);
+
+  const ChatComponent = () => {
+    const { connect, disconnect } = useChatSession();
+
+    useEffect(() => {
+      connect();
+      return () => disconnect();
+    }, [connect, disconnect]);
+
+    return (
+      <div className="flex flex-col h-screen">
+        <h1 className="text-2xl font-bold p-4">{translations.chatTitle}</h1>
+        <div className="flex-1 overflow-y-auto p-4">
+          {conversation.map((message, index) => (
+            <div key={index} className="mb-4">
+              <strong>{message.role}:</strong> {message.content}
+            </div>
+          ))}
+        </div>
+        <div className="p-4">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={translations.typeMessage}
+            className="w-full p-2 border rounded"
+          />
+          <button
+            onClick={async () => {
+              const { messages, newMessage } = await continueConversation([
+                ...conversation,
+                { role: "user", content: input },
+              ]);
+
+              let textContent = "";
+
+              for await (const delta of readStreamableValue(newMessage)) {
+                textContent = `${textContent}${delta}`;
+                setConversation([
+                  ...messages,
+                  { role: "assistant", content: textContent },
+                ]);
+              }
+              setInput("");
+            }}
+            className="mt-2 px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            {translations.send}
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <ChainlitContext.Provider value={apiClient}>
+      <RecoilRoot>
+        <ChatComponent />
+      </RecoilRoot>
+    </ChainlitContext.Provider>
+  );
+}
+
+
+--- File: src/app/chat/actions.ts ---
+
+"use server";
+
+import { streamText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { createStreamableValue } from "ai/rsc";
+import { LiteralClient } from "@literalai/client";
+
+const literalClient = new LiteralClient();
+const streamTextMonitored =
+  literalClient.instrumentation.vercel.instrument(streamText);
+
+export interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export async function continueConversation(history: Message[]) {
+  const stream = createStreamableValue();
+
+  (async () => {
+    const { textStream } = await streamTextMonitored({
+      model: openai("gpt-3.5-turbo"),
+      system: "You are a helpful assistant.",
+      messages: history,
+    });
+
+    for await (const text of textStream) {
+      stream.update(text);
+    }
+
+    stream.done();
+  })();
+
+  return {
+    messages: history,
+    newMessage: stream.value,
+  };
+}
+
+
+--- File: vercel.json ---
+
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ]
+}
+
+
+--- File: README.md ---
+
+This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+
+## Getting Started
+
+First, run the development server:
+
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+
+This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+
+## Learn More
+
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+--- File: tailwind.config.ts ---
+
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: [
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        background: "var(--background)",
+        foreground: "var(--foreground)",
+      },
+    },
+  },
+  plugins: [],
+};
+export default config;
+
+
+--- File: postcss.config.js ---
+
+File not found: postcss.config.js
+
+--- File: .env.local ---
+
+File not found: .env.local
+
+--- File: src/app/globals.css ---
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+
+--- File: src/components/ChatInterface.tsx ---
+
+File not found: src/components/ChatInterface.tsx
+
+--- File: src/components/WelcomeScreen.tsx ---
+
+File not found: src/components/WelcomeScreen.tsx
+
+--- File: src/pages/_app.tsx ---
+
+File not found: src/pages/_app.tsx
+
+--- File: src/pages/index.tsx ---
+
+File not found: src/pages/index.tsx
+
+--- File: src/pages/chat.tsx ---
+
+File not found: src/pages/chat.tsx

@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^0.0.31",
-    "@chainlit/react-client": "^0.1.2",
+    "@chainlit/react-client": "^0.2.2",
     "@literalai/client": "^0.0.509",
     "ai": "^3.2.1",
     "jwt-decode": "^4.0.0",

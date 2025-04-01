@@ -10,7 +10,7 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix"
   },
   "dependencies": {
-    "@ai-sdk/openai": "^0.0.31",
+    "@ai-sdk/openai": "^0.0.72",
     "@chainlit/react-client": "^0.1.2",
     "@literalai/client": "^0.0.509",
     "ai": "^3.2.1",

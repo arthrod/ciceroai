@@ -13,7 +13,7 @@
     "@ai-sdk/openai": "^0.0.31",
     "@chainlit/react-client": "^0.1.2",
     "@literalai/client": "^0.0.509",
-    "ai": "^3.2.1",
+    "ai": "^5.0.0",
     "jwt-decode": "^4.0.0",
     "lodash": "^4.17.21",
     "next": "14.2.25",
